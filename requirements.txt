@@ -1,5 +1,6 @@
 sklearn
 matplotlib
+streamlit
 seaborn
 pandas
 numpy
