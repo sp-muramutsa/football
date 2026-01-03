@@ -11,27 +11,25 @@ st.set_page_config(page_title="Football Recommender", layout="centered")
 
 @st.cache_data
 def load_and_process_data():
+    df = pd.read_excel("data/top5-players24-25.xlsx") 
+    
+    df = df.dropna(subset=["Pos"])
+    df = df[df["Pos"].str.contains("FW")]
+    
+    features = ['Gls', 'Ast', 'G+A', 'G-PK', 'PK', 'PKatt', 'xG',
+                'npxG', 'xAG', 'npxG+xAG', 'PrgC', 'PrgP', 'PrgR']
 
-        df = pd.read_excel("data/top5-players24-25.xlsx") 
-        
-        # Only keep Forwards
-        df = df.dropna(subset=["Pos"])
-        df = df[df["Pos"].str.contains("FW")]
-        
-        X = df[['Gls', 'Ast', 'G+A', 'G-PK', 'PK', 'PKatt', 'xG',
-                'npxG', 'xAG', 'npxG+xAG', 'PrgC', 'PrgP', 'PrgR']]
+    X = df[features].fillna(0)
+    
+    scaler = MinMaxScaler()
+    X_scaled = scaler.fit_transform(X)
+    
+    nmf = NMF(n_components=10, max_iter=500, random_state=42)
+    nmf_features = nmf.fit_transform(X_scaled)
+    normalized_features = normalize(nmf_features)
 
-        X = df[features].fillna(0)
+    return df, normalized_features
         
-        scaler = MinMaxScaler()
-        X_scaled = scaler.fit_transform(X)
-        
-        nmf = NMF(n_components=10, max_iter=500, random_state=42)
-        nmf_features = nmf.fit_transform(X_scaled)
-        normalized_features = normalize(nmf_features)
-
-        return df, normalized_features
-
 # Load the cached data
 try:
     df, normalized_features = load_and_process_data()
