@@ -26,7 +26,7 @@ def load_and_process_data():
         scaler = MinMaxScaler()
         X_scaled = scaler.fit_transform(X)
         
-        nmf = NMF(n_components=10, max_iter=500, random_state=42
+        nmf = NMF(n_components=10, max_iter=500, random_state=42)
         nmf_features = nmf.fit_transform(X_scaled)
         normalized_features = normalize(nmf_features)
 
